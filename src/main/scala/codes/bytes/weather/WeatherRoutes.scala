@@ -11,6 +11,13 @@ import org.apache.pekko.pattern.CircuitBreaker
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
+import org.apache.pekko.http.scaladsl.Http
+import org.apache.pekko.http.scaladsl.model._
+import org.apache.pekko.http.scaladsl.client.RequestBuilding.Get
+import org.apache.pekko.http.scaladsl.unmarshalling.Unmarshal
+import spray.json._
+
+import scala.util.{Failure, Success}
 
 
 class WeatherRoutes(system: ActorSystem) {
@@ -28,15 +35,54 @@ class WeatherRoutes(system: ActorSystem) {
             maxFailures = 1,
             callTimeout = 5.seconds,
             resetTimeout)
-
-          onCompleteWithBreaker(breaker)(processWeatherRequest(req))
+          onCompleteWithBreaker(breaker)(processWeatherRequest(req)) {
+            case Success(resp) =>
+              complete(StatusCodes.OK, "foobar")
+            case Failure(exception) =>
+              // todo - a few different fail scenarios
+              complete(StatusCodes.InternalServerError, s"Error: ${exception}")
+          }
         }
       }
     }
 
   private def processWeatherRequest(req: WeatherRequest): Future[CurrentWeather] = {
-    system.log.debug("Got a WeatherRequest {}", req)
+    system.log.info("Got a WeatherRequest {}", req)
 
+    val apiKey = system.settings.config.getString("weather.openweather.api-key")
+    // todo - check lat and lon are in range
+    val apiUrl = s"https://api.openweathermap.org/data/2.5/onecall?lat=${req.lat}&lon=${req.lat}&exclude=hourly,daily&appid=$apiKey&units=imperial"
+    system.log.info("API URL to be called: {}", apiUrl)
+    val weatherApiReq =
+      Get(apiUrl)
+    val responseFuture = {
+      Http()(system)
+        .singleRequest(weatherApiReq)
+    } flatMap { response =>
+      // I got a bit stuck here trying to remember how to properly pass the materializer
+      // this is a lazy fix, admittedly
+      implicit val _system: ActorSystem = system
+      system.log.info("{}", response.entity)
+      Unmarshal(response.entity).to[OpenWeatherResponse].map { weatherResponse =>
+//        system.log.info("Raw JSON from weather API: {}", jsonString)
+//        val json = jsonString.parseJson
+//        system.log.info("Parsed JSON from weather API")
+//        // parsing JSON by hand instead of translating to case class because we only need a *very* small subset
+//        // of the data in the API response. In this instance I find it more efficient to grab just the elements we need
+//        json match {
+//          case JsObject(fields) =>
+//            val current = fields.get("current")
+//            // this could probably use a custom exception
+//          case JsNull => Failure(new Exception("Got a null response from Weather API"))
+//          case default => Failure(new Exception(s"Invalid datatype from Weather API: ${default}"))
+//        }
+          system.log.info("Parsed an OpenWeatherResponse from JSON: {}", weatherResponse)
+
+          CurrentWeather(WeatherCondition.Thunderstorm("my hovercraft is full of eels"), TemperatureDescription.Cold, activeAlert = true, Vector.empty)
+      }
+
+    }
+    responseFuture
   }
 
 }

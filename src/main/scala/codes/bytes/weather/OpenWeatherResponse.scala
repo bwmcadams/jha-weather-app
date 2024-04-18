@@ -1,0 +1,45 @@
+package codes.bytes.weather
+
+case class OpenWeatherResponse(
+                                lat: Double,
+                                lon: Double,
+                                timezone: String,
+                                timezoneOffset: Option[Double],
+                                current: ResponseCurrentWeather,
+                              )
+
+// Leaving off hourly and daily as our API call specifically asks to skip them
+case class ResponseCurrentWeather(
+                                 dt: Long, // these longs would all be converted to Java DateTime objects in a more complete Impl
+                                 sunrise: Long,
+                                 sunset: Long,
+                                 temp: Double,
+                                 feelsLike: Option[Double],
+                                 pressure: Long,
+                                 humidity: Long,
+                                 dewPoint: Option[Double],
+                                 uvi: Double,
+                                 clouds: Long,
+                                 visibility: Long,
+                                 windSpeed: Option[Long],
+                                 windDeg: Option[Long],
+                                 weatherCondition: ResponseWeatherCondition,
+                                 snow: Option[ResponseSnowInfo],
+                                 rain: Option[ResponseRainInfo],
+                                 minutely: ResponseMinutely,
+                                 alerts: Vector[WeatherAlert]
+                                )
+
+case class ResponseWeatherCondition(
+                                   id: Long,
+                                   main: String,
+                                   description: String,
+                                   icon: String
+                                   )
+
+case class ResponseRainInfo(_1h: Double)
+
+case class ResponseSnowInfo(_1h: Double)
+
+case class ResponseMinutely(dt: Long, precipitation: Double)
+

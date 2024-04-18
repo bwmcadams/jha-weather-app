@@ -26,12 +26,11 @@ object WeatherApp {
         system.terminate()
     }(system.dispatcher /* execution context*/)
   }
-  :throws
+
   def main(args: Array[String]): Unit = {
       val system = ActorSystem("WeatherHTTPServer")
       val routes = new WeatherRoutes(system)
       startHttpServer(routes.weatherRoutes)(system)
-
   }
 }
 //#main-class
