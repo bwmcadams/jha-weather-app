@@ -21,6 +21,7 @@ object JsonFormats extends DefaultJsonProtocol {
       case TemperatureDescription.Hot => JsString("Hot")
     }
 
+    // we don't ever need read for this so I'm lazily skipping it
     def read(value: JsValue) = ???
 
   }
