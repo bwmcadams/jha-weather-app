@@ -37,7 +37,7 @@ class WeatherRoutes(system: ActorSystem) {
             resetTimeout)
           onCompleteWithBreaker(breaker)(processWeatherRequest(req)) {
             case Success(resp) =>
-              complete(StatusCodes.OK, "foobar")
+              complete(StatusCodes.OK, resp)
             case Failure(exception) =>
               // todo - a few different fail scenarios
               complete(StatusCodes.InternalServerError, s"Error: ${exception}")
@@ -64,8 +64,6 @@ class WeatherRoutes(system: ActorSystem) {
       implicit val _system: ActorSystem = system
       system.log.info("{}", response.entity)
       Unmarshal(response.entity).to[OpenWeatherResponse].map { weatherResponse =>
-          system.log.info("Raw JSON from weather API: {}", weatherResponse)
-        
           system.log.info("Parsed an OpenWeatherResponse from JSON: {}", weatherResponse)
 
           CurrentWeather(
