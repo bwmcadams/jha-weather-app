@@ -30,6 +30,7 @@ class WeatherRoutes(system: ActorSystem) {
           val resetTimeout = 1.second
           // this should help if the openweather API goes down, instead of straight up failures
           val breaker = new CircuitBreaker(system.scheduler, maxFailures = 1, callTimeout = 5.seconds, resetTimeout)
+          // check latitude and longitude are in proper ranges, if they are then execute the requesdt
           if (req.lat < -90 || req.lat > 90) complete(StatusCodes.BadRequest, "{\"error\": \"Latitude out of range. Min -90 Max +90\"}")
           else if (req.lon < -180 || req.lon > 180) complete(StatusCodes.BadRequest, "{\"error\": \"Longitude out of range. Min -90 Max +90\"}")
           else onCompleteWithBreaker(breaker)(processWeatherRequest(req)) {
@@ -48,7 +49,7 @@ class WeatherRoutes(system: ActorSystem) {
 
     val apiKey = system.settings.config.getString("weather.openweather.api-key")
     val apiUrl = s"https://api.openweathermap.org/data/2.5/onecall?lat=${req.lat}&lon=${req.lat}&exclude=hourly,daily&appid=$apiKey&units=imperial"
-    system.log.info("API URL to be called: {}", apiUrl)
+    system.log.debug("API URL to be called: {}", apiUrl)
     val weatherApiReq =
       Get(apiUrl)
     val responseFuture = {
@@ -58,9 +59,8 @@ class WeatherRoutes(system: ActorSystem) {
       // I got a bit stuck here trying to remember how to properly pass the materializer
       // this is a lazy fix, admittedly
       implicit val _system: ActorSystem = system
-      system.log.info("{}", response.entity)
       Unmarshal(response.entity).to[OpenWeatherResponse].map { weatherResponse =>
-        system.log.info("Parsed an OpenWeatherResponse from JSON: {}", weatherResponse)
+        system.log.debug("Parsed an OpenWeatherResponse from JSON: {}", weatherResponse)
 
         CurrentWeather.fromAPIResponse(weatherResponse)
       }
@@ -71,4 +71,3 @@ class WeatherRoutes(system: ActorSystem) {
 
 }
 
-case class WeatherRequest(lon: Double, lat: Double)

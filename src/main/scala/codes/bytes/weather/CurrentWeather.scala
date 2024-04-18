@@ -1,5 +1,6 @@
 package codes.bytes.weather
 
+case class WeatherRequest(lon: Double, lat: Double)
 /*
  Simple ADT to represent our "Description" of the temperature
  */
@@ -82,14 +83,6 @@ case class WeatherAlert(event: String,
                         start: Long, /* epoch seconds */
                         end: Long, /* epoch seconds */
                         tags: Vector[String])
-
-object WeatherAlert {
-  /*  def fromEpochs(evjent: String, description: String, source: String, start: Long, end: Long, tags: Vector[String]): WeatherAlert = {
-      val startDT = new DateTime(start * 1000L)
-      val endDT = new DateTime(start * 1000L)
-      new WeatherAlert(event, description, source, startDT, endDT, tags)
-    } */
-}
 
 /*
 Core Response Object to describe current weather
