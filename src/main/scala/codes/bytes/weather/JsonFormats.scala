@@ -3,22 +3,7 @@ package codes.bytes.weather
 import spray.json._
 
 object JsonFormats extends DefaultJsonProtocol {
-  // import the default encoders for primitive types (Int, String, Lists etc)
 
-  /*  // it's been awhile since I dealt with Joda Time conversions in Spray JSON
-    // so this is a bit of a hacky mess (via StackOverflow)
-    implicit object DateTimeJsonFormat extends RootJsonFormat[DateTime] {
-
-      private val parserISO : DateTimeFormatter = ISODateTimeFormat.dateTimeNoMillis();
-
-      override def write(obj: DateTime) = JsString(parserISO.print(obj))
-
-      override def read(json: JsValue) : DateTime = json match {
-        case JsString(s) => parserISO.parseDateTime(s)
-        case _ => throw new DeserializationException("Error info you want here ...")
-      }
-    }
-  */
   implicit object WeatherConditionJsonFormat extends RootJsonFormat[WeatherCondition] {
     def write(wc: WeatherCondition) =
       JsString(wc.description)

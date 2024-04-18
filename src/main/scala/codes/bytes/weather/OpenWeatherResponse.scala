@@ -11,8 +11,8 @@ case class OpenWeatherResponse(
 // Leaving off hourly and daily as our API call specifically asks to skip them
 case class ResponseCurrentWeather(
                                  dt: Long, // these longs would all be converted to Java DateTime objects in a more complete Impl
-                                 sunrise: Long,
-                                 sunset: Long,
+                                 sunrise: Option[Long],
+                                 sunset: Option[Long],
                                  temp: Double,
                                  feels_like: Double,
                                  pressure: Long,
