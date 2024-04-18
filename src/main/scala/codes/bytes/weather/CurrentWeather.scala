@@ -62,5 +62,6 @@ Core Response Object to describe current weather
  */
 case class CurrentWeather(weatherConditions: Vector[WeatherCondition],
                           temperatureDescription: TemperatureDescription,
-                          activeAlerts: Boolean,
-                          alerts: Vector[WeatherAlert])
+                          alerts: Vector[WeatherAlert]) {
+  val activeAlerts = alerts.isEmpty
+}
