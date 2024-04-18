@@ -1,22 +1,19 @@
 package codes.bytes.weather
 
+import codes.bytes.weather.JsonFormats._
 import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.http.scaladsl.Http
+import org.apache.pekko.http.scaladsl.client.RequestBuilding.Get
 import org.apache.pekko.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
-import JsonFormats._
-import org.apache.pekko.util.Timeout
-import org.apache.pekko.http.scaladsl.server.Directives._
 import org.apache.pekko.http.scaladsl.model.StatusCodes
+import org.apache.pekko.http.scaladsl.server.Directives._
 import org.apache.pekko.http.scaladsl.server.Route
+import org.apache.pekko.http.scaladsl.unmarshalling.Unmarshal
 import org.apache.pekko.pattern.CircuitBreaker
+import org.apache.pekko.util.Timeout
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import org.apache.pekko.http.scaladsl.Http
-import org.apache.pekko.http.scaladsl.model._
-import org.apache.pekko.http.scaladsl.client.RequestBuilding.Get
-import org.apache.pekko.http.scaladsl.unmarshalling.Unmarshal
-import spray.json._
-
 import scala.util.{Failure, Success}
 
 
@@ -25,17 +22,17 @@ class WeatherRoutes(system: ActorSystem) {
     Timeout.create(system.settings.config.getDuration("weather.routes.ask-timeout"))
 
   import system.dispatcher
+
   val weatherRoutes: Route =
     path("weather") {
       get {
         parameters("lon".as[Double], "lat".as[Double]).as(WeatherRequest) { (req: WeatherRequest) =>
           val resetTimeout = 1.second
-          val breaker = new CircuitBreaker(
-            system.scheduler,
-            maxFailures = 1,
-            callTimeout = 5.seconds,
-            resetTimeout)
-          onCompleteWithBreaker(breaker)(processWeatherRequest(req)) {
+          // this should help if the openweather API goes down, instead of straight up failures
+          val breaker = new CircuitBreaker(system.scheduler, maxFailures = 1, callTimeout = 5.seconds, resetTimeout)
+          if (req.lat < -90 || req.lat > 90) complete(StatusCodes.BadRequest, "{\"error\": \"Latitude out of range. Min -90 Max +90\"}")
+          else if (req.lon < -180 || req.lon > 180) complete(StatusCodes.BadRequest, "{\"error\": \"Longitude out of range. Min -90 Max +90\"}")
+          else onCompleteWithBreaker(breaker)(processWeatherRequest(req)) {
             case Success(resp) =>
               complete(StatusCodes.OK, resp)
             case Failure(exception) =>
@@ -50,7 +47,6 @@ class WeatherRoutes(system: ActorSystem) {
     system.log.info("Got a WeatherRequest {}", req)
 
     val apiKey = system.settings.config.getString("weather.openweather.api-key")
-    // todo - check lat and lon are in range
     val apiUrl = s"https://api.openweathermap.org/data/2.5/onecall?lat=${req.lat}&lon=${req.lat}&exclude=hourly,daily&appid=$apiKey&units=imperial"
     system.log.info("API URL to be called: {}", apiUrl)
     val weatherApiReq =
@@ -64,9 +60,9 @@ class WeatherRoutes(system: ActorSystem) {
       implicit val _system: ActorSystem = system
       system.log.info("{}", response.entity)
       Unmarshal(response.entity).to[OpenWeatherResponse].map { weatherResponse =>
-          system.log.info("Parsed an OpenWeatherResponse from JSON: {}", weatherResponse)
+        system.log.info("Parsed an OpenWeatherResponse from JSON: {}", weatherResponse)
 
-          CurrentWeather.fromAPIResponse(weatherResponse)
+        CurrentWeather.fromAPIResponse(weatherResponse)
       }
 
     }

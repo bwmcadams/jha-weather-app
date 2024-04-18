@@ -51,7 +51,7 @@ object WeatherCondition {
       // todo - i think this could be cleaner…
       if (w.id >= 200 && w.id <= 300) { //Thunderstorm group
         WeatherCondition.Thunderstorm(w.description)
-      } else if (w.id >= 300 && w.id < 400) {  // Drizzle group
+      } else if (w.id >= 300 && w.id < 400) { // Drizzle group
         WeatherCondition.Drizzle(w.description)
       } else if (w.id >= 500 && w.id < 600) { // Rain group
         WeatherCondition.Rain(w.description)

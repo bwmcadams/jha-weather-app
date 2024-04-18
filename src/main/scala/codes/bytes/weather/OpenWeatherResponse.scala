@@ -10,31 +10,31 @@ case class OpenWeatherResponse(
 
 // Leaving off hourly and daily as our API call specifically asks to skip them
 case class ResponseCurrentWeather(
-                                 dt: Long, // these longs would all be converted to Java DateTime objects in a more complete Impl
-                                 sunrise: Option[Long],
-                                 sunset: Option[Long],
-                                 temp: Double,
-                                 feels_like: Double,
-                                 pressure: Long,
-                                 humidity: Long,
-                                 dew_point: Double,
-                                 uvi: Double,
-                                 clouds: Long,
-                                 visibility: Long,
-                                 wind_speed: Double,
-                                 wind_deg: Long,
-                                 weather: Vector[ResponseWeatherCondition],
-                                 snow: Option[ResponseSnowInfo],
-                                 rain: Option[ResponseRainInfo],
-                                 minutely: Option[ResponseMinutely],
-                                 alerts: Option[Vector[WeatherAlert]]
-                                )
+                                   dt: Long, // these longs would all be converted to Java DateTime objects in a more complete Impl
+                                   sunrise: Option[Long],
+                                   sunset: Option[Long],
+                                   temp: Double,
+                                   feels_like: Double,
+                                   pressure: Long,
+                                   humidity: Long,
+                                   dew_point: Double,
+                                   uvi: Double,
+                                   clouds: Long,
+                                   visibility: Long,
+                                   wind_speed: Double,
+                                   wind_deg: Long,
+                                   weather: Vector[ResponseWeatherCondition],
+                                   snow: Option[ResponseSnowInfo],
+                                   rain: Option[ResponseRainInfo],
+                                   minutely: Option[ResponseMinutely],
+                                   alerts: Option[Vector[WeatherAlert]]
+                                 )
 
 case class ResponseWeatherCondition(
-                                   id: Long,
-                                   main: String,
-                                   description: String,
-                                   icon: String
+                                     id: Long,
+                                     main: String,
+                                     description: String,
+                                     icon: String
                                    )
 
 case class ResponseRainInfo(_1h: Double)

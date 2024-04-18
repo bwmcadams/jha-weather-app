@@ -1,15 +1,11 @@
 package codes.bytes.weather
 
 import org.apache.pekko
-import pekko.actor.ActorSystem
-import pekko.http.scaladsl.Http
-import pekko.http.scaladsl.server.Route
-import pekko.actor.ActorSystem
-import pekko.http.scaladsl.Http
-import pekko.stream.scaladsl._
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.http.scaladsl.Http
+import org.apache.pekko.http.scaladsl.server.Route
 
-import scala.util.Failure
-import scala.util.Success
+import scala.util.{Failure, Success}
 
 object WeatherApp {
   private def startHttpServer(routes: Route)(implicit system: ActorSystem): Unit = {
@@ -28,9 +24,9 @@ object WeatherApp {
   }
 
   def main(args: Array[String]): Unit = {
-      val system = ActorSystem("WeatherHTTPServer")
-      val routes = new WeatherRoutes(system)
-      startHttpServer(routes.weatherRoutes)(system)
+    // Start up an ActorSystem to use with PekkoHTTP
+    val system = ActorSystem("WeatherHTTPServer")
+    val routes = new WeatherRoutes(system)
+    startHttpServer(routes.weatherRoutes)(system)
   }
 }
-//#main-class
