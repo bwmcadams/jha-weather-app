@@ -14,20 +14,20 @@ case class ResponseCurrentWeather(
                                  sunrise: Long,
                                  sunset: Long,
                                  temp: Double,
-                                 feelsLike: Option[Double],
+                                 feels_like: Double,
                                  pressure: Long,
                                  humidity: Long,
-                                 dewPoint: Option[Double],
+                                 dew_point: Double,
                                  uvi: Double,
                                  clouds: Long,
                                  visibility: Long,
-                                 windSpeed: Option[Long],
-                                 windDeg: Option[Long],
-                                 weatherCondition: ResponseWeatherCondition,
+                                 wind_speed: Double,
+                                 wind_deg: Long,
+                                 weather: Vector[ResponseWeatherCondition],
                                  snow: Option[ResponseSnowInfo],
                                  rain: Option[ResponseRainInfo],
-                                 minutely: ResponseMinutely,
-                                 alerts: Vector[WeatherAlert]
+                                 minutely: Option[ResponseMinutely],
+                                 alerts: Option[Vector[WeatherAlert]]
                                 )
 
 case class ResponseWeatherCondition(

@@ -60,7 +60,7 @@ object WeatherAlert {
 /*
 Core Response Object to describe current weather
  */
-case class CurrentWeather(weatherCondition: WeatherCondition,
+case class CurrentWeather(weatherConditions: Vector[WeatherCondition],
                           temperatureDescription: TemperatureDescription,
-                          activeAlert: Boolean,
+                          activeAlerts: Boolean,
                           alerts: Vector[WeatherAlert])

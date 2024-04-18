@@ -64,21 +64,16 @@ class WeatherRoutes(system: ActorSystem) {
       implicit val _system: ActorSystem = system
       system.log.info("{}", response.entity)
       Unmarshal(response.entity).to[OpenWeatherResponse].map { weatherResponse =>
-//        system.log.info("Raw JSON from weather API: {}", jsonString)
-//        val json = jsonString.parseJson
-//        system.log.info("Parsed JSON from weather API")
-//        // parsing JSON by hand instead of translating to case class because we only need a *very* small subset
-//        // of the data in the API response. In this instance I find it more efficient to grab just the elements we need
-//        json match {
-//          case JsObject(fields) =>
-//            val current = fields.get("current")
-//            // this could probably use a custom exception
-//          case JsNull => Failure(new Exception("Got a null response from Weather API"))
-//          case default => Failure(new Exception(s"Invalid datatype from Weather API: ${default}"))
-//        }
+          system.log.info("Raw JSON from weather API: {}", weatherResponse)
+        
           system.log.info("Parsed an OpenWeatherResponse from JSON: {}", weatherResponse)
 
-          CurrentWeather(WeatherCondition.Thunderstorm("my hovercraft is full of eels"), TemperatureDescription.Cold, activeAlert = true, Vector.empty)
+          CurrentWeather(
+            Vector(WeatherCondition.Thunderstorm("my hovercraft is full of eels")),
+            TemperatureDescription.Cold,
+            activeAlerts =  true,
+            alerts = Vector.empty[WeatherAlert]
+          )
       }
 
     }
