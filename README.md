@@ -38,3 +38,9 @@ Example Output:
 ### Future Improvement Suggestions
 - Better / more explicit error handling
 - Add support for specifying Zip code or City + state; there are APIs on OpenWeatherMap that can resolve these into geo coordinates
+- Find a way to quickly locate areas with active weather alerts to test the alert parsing with more completely
+- More testing
+  - more use of complex matchers
+  - Test the full JSON that could POSSIBLY come from OpenWeather if you didn't filter out hourly, daily, etc
+  - Property based testing for ranged values like Temperature
+  - A routes test; this wasn't really quickly feasible with the only route triggering a API Call; tests should run offline

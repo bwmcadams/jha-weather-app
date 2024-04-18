@@ -3,12 +3,13 @@ package codes.bytes.weather
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-
 import spray.json._
 
 // kind of a catchall test set that pokes at a few things related to `CurrentWeather`
 class CurrentWeatherSpec extends AnyWordSpec with Matchers with ScalaFutures {
-  val shortJsonRespone =
+  import JsonFormats._
+
+  val shortJsonResponse =
     """
       |{
       |  "lat": 2,
@@ -165,11 +166,24 @@ class CurrentWeatherSpec extends AnyWordSpec with Matchers with ScalaFutures {
     |""".stripMargin
 
 
-  "Parsing JSON from OpenWeatheMap OneCall" should {
-    "successfully parse and return a CurrentWeather instance" in {
-      val json = fullJsonResponse.parseJson
-      println("parsed JSON")
-
+  "Parsing JSON from OpenWeatherMap OneCall" should {
+    "successfully parse and return a simple JSON into a `OpenWeatherResponse` instance" in {
+      val json = shortJsonResponse.parseJson
+      val r = json.convertTo[OpenWeatherResponse]
+      // not checking every value, just a quick sampling
+      r.lat shouldBe 2
+      r.lon shouldBe 2
+      r.current.temp shouldBe 84.79
+    }
+    "successfully turn a `OpenWeatherResponse` into a `CurrentWeather`" in {
+      val json = shortJsonResponse.parseJson
+      val r = json.convertTo[OpenWeatherResponse]
+      val cw = CurrentWeather.fromAPIResponse(r)
+      cw.activeAlerts shouldBe false
+      cw.alerts shouldBe empty
+      cw.temperatureDescription shouldBe TemperatureDescription.Moderate
+      cw.weatherConditions  should have size 1
+      cw.weatherConditions.head shouldBe WeatherCondition.Cloudy("broken clouds")
     }
   }
 }
