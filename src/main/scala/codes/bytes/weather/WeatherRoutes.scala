@@ -66,12 +66,7 @@ class WeatherRoutes(system: ActorSystem) {
       Unmarshal(response.entity).to[OpenWeatherResponse].map { weatherResponse =>
           system.log.info("Parsed an OpenWeatherResponse from JSON: {}", weatherResponse)
 
-          CurrentWeather(
-            Vector(WeatherCondition.Thunderstorm("my hovercraft is full of eels")),
-            TemperatureDescription.Cold,
-            activeAlerts =  true,
-            alerts = Vector.empty[WeatherAlert]
-          )
+          CurrentWeather.fromAPIResponse(weatherResponse)
       }
 
     }

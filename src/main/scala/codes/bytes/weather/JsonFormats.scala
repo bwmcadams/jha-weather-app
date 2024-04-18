@@ -47,12 +47,6 @@ object JsonFormats extends DefaultJsonProtocol {
     implicit val weatherAlert: RootJsonFormat[WeatherAlert] = jsonFormat6(WeatherAlert.apply)
     implicit val responseCurrentWeather: RootJsonFormat[ResponseCurrentWeather] = jsonFormat18(ResponseCurrentWeather.apply)
     implicit val apiResponseFormat: RootJsonFormat[OpenWeatherResponse] = jsonFormat5(OpenWeatherResponse.apply)
-    implicit val weatherThunderstorm: RootJsonFormat[WeatherCondition.Thunderstorm] = jsonFormat1(WeatherCondition.Thunderstorm)
-    implicit val weatherDrizzle: RootJsonFormat[WeatherCondition.Drizzle] = jsonFormat1(WeatherCondition.Drizzle)
-    implicit val weatherRain: RootJsonFormat[WeatherCondition.Rain] = jsonFormat1(WeatherCondition.Rain)
-    implicit val weatherSnow: RootJsonFormat[WeatherCondition.Snow] = jsonFormat1(WeatherCondition.Snow)
-    implicit val weatherClear: RootJsonFormat[WeatherCondition.Clear] = jsonFormat1(WeatherCondition.Clear)
-    implicit val weatherCloudy: RootJsonFormat[WeatherCondition.Cloudy] = jsonFormat1(WeatherCondition.Cloudy)
     implicit val currentWeather: RootJsonFormat[CurrentWeather] = jsonFormat4(CurrentWeather.apply)
 
 
