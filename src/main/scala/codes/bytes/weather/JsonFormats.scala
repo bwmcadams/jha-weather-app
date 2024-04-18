@@ -8,6 +8,7 @@ object JsonFormats extends DefaultJsonProtocol {
     def write(wc: WeatherCondition) =
       JsString(wc.description)
 
+    // we don't ever need read for this so I'm lazily skipping it
     def read(value: JsValue) = ???
 
   }
