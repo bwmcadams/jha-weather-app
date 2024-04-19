@@ -32,7 +32,7 @@ class WeatherRoutes(system: ActorSystem) {
           val breaker = new CircuitBreaker(system.scheduler, maxFailures = 1, callTimeout = 5.seconds, resetTimeout)
           // check latitude and longitude are in proper ranges, if they are then execute the requesdt
           if (req.lat < -90 || req.lat > 90) complete(StatusCodes.BadRequest, "{\"error\": \"Latitude out of range. Min -90 Max +90\"}")
-          else if (req.lon < -180 || req.lon > 180) complete(StatusCodes.BadRequest, "{\"error\": \"Longitude out of range. Min -90 Max +90\"}")
+          else if (req.lon < -180 || req.lon > 180) complete(StatusCodes.BadRequest, "{\"error\": \"Longitude out of range. Min -180 Max +180\"}")
           else onCompleteWithBreaker(breaker)(processWeatherRequest(req)) {
             case Success(resp) =>
               complete(StatusCodes.OK, resp)
