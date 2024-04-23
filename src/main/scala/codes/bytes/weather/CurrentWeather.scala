@@ -101,8 +101,10 @@ object CurrentWeather {
 
     val activeAlerts = responseCW.alerts.isDefined
 
-    // ugh, this is another hacky bit
-    val alerts = if (responseCW.alerts.isDefined) responseCW.alerts.get else Vector.empty
+    val alerts = responseCW.alerts match {
+      case Some(a) => a
+      case None => Vector.empty
+    }
 
     new CurrentWeather(convertedWeathers, tempDescription, activeAlerts, alerts)
   }
